@@ -1,6 +1,6 @@
 import os
 import cv2
-import pyzbar.pyzbar as pyzbar
+
 from openpyxl import Workbook
 from qr_website.db.To_excel import save_ex
 from qr_website.db.files_manager import *
