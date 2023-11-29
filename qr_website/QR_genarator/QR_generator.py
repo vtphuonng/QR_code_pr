@@ -1,5 +1,5 @@
 from .test2 import *
-from qr_website.db.db_generator import data_generation
+# from qr_website.db.db_generator import data_generation
 from dotenv import dotenv_values
 import os
 import glob
