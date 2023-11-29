@@ -65,14 +65,6 @@ WSGI_APPLICATION = 'qr_pr.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'qr',
-        'USER': 'root',
-        'PASSWORD': 'Cu@moni@c8@5',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
 }
 
 # Password validation
