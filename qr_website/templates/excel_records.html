@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% for r in e_records %}
+<div class="card">
+  <div class="card-header"><strong>Excel file </strong>
+  </div>
+  <div class="card-body">
+
+<p class="card-text">
+<strong>Excel file name </strong>{{ r.name }}</p>
+
+<p class="card-text">
+<strong>Record id </strong>{{ r.excel_id }}</p>
+
+<p class="card-text">
+<strong>Create Day: </strong>{{ r.create_day }}</p>
+
+    
+  </div>
+</div>
+
+<br/><br/>
+<a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
+
+<a href="{% url 'delete_excel_file' r.excel_id %}" class="btn btn-danger">Delete</a>
+
+{% endfor %}
+{% endblock %}

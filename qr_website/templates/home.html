@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+<h1>WELCOME</h1>
+    <ul>
+        <a href="{% url 'profile_image_upload' %}" class="btn btn-secondary">Upload File</a>
+        <a href="{% url 'webcam' %}" class="btn btn-secondary">Scan Code</a>
+
+    </ul>
+<table class="table table-success table-striped">
+  <thead class="table-dark">
+    <tr>
+        <th scope="col">Name</th>
+        <th scope="col">File_path</th>
+        <th scope="col">Create_day</th>
+        <th scope="col">Last_modified_time</th>
+    </tr>
+  </thead>
+  <tbody>
+      {% if items %}
+            {% for file_name, file_path, file_created, file_last_modified in items %}
+              <tr>
+                    <td>{{ file_name }}</td>
+                    <td>{{ file_path }}</td>
+                    <td>{{ file_created }}</td>
+                    <td>{{ file_last_modified }}</td>
+              </tr>
+            {% endfor %}
+      {% endif %}
+      <br/>
+  </tbody>
+</table>
+
+{% else %}
+
+<h1>login</h1>
+<br/>
+<form method="POST" action="{% url 'home' %}">
+    {% csrf_token %}
+    <form>
+        <div class="mb-3">
+          <input type="text" class="form-control" name="username", placeholder="User Name">
+        </div><br/>
+        <div class="mb-3">
+          <input type="password" class="form-control" name="password", placeholder="Password">
+        </div>
+        <br/>
+        <button type="submit" class="btn btn-primary">login</button>
+    </form>
+</form>
+</div>
+
+{% endif %}
+{% endblock %}
