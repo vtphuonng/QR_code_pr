@@ -1,7 +1,7 @@
 from django import forms
 from .models import records
 class ProfileImageForm(forms.Form):
-    image = forms.FileField(label='select a profile Image')
+    image = forms.FileField()
 
 # Create Add Record Form
 class AddRecordForm(forms.ModelForm):

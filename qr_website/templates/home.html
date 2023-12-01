@@ -1,56 +1,78 @@
+<!-- home.html -->
 {% extends 'base.html' %}
 
 {% block content %}
+  <div class="container">
+    {% if user.is_authenticated %}
+      <header class="header">
+        <!-- ... (unchanged) ... -->
+      </header>
 
-{% if user.is_authenticated %}
-<h1>WELCOME</h1>
-    <ul>
-        <a href="{% url 'profile_image_upload' %}" class="btn btn-secondary">Upload File</a>
-        <a href="{% url 'webcam' %}" class="btn btn-secondary">Scan Code</a>
-
-    </ul>
-<table class="table table-success table-striped">
-  <thead class="table-dark">
-    <tr>
-        <th scope="col">Name</th>
-        <th scope="col">File_path</th>
-        <th scope="col">Create_day</th>
-        <th scope="col">Last_modified_time</th>
-    </tr>
-  </thead>
-  <tbody>
-      {% if items %}
-            {% for file_name, file_path, file_created, file_last_modified in items %}
+      <div class="table-section">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead class="table-light">
               <tr>
-                    <td>{{ file_name }}</td>
-                    <td>{{ file_path }}</td>
-                    <td>{{ file_created }}</td>
-                    <td>{{ file_last_modified }}</td>
+                <th scope="col">Name</th>
+                <th scope="col">File Path</th>
+                <th scope="col">Create Day</th>
+                <th scope="col">Last Modified Time</th>
+                <th scope="col"> Upload </th>
               </tr>
-            {% endfor %}
-      {% endif %}
-      <br/>
-  </tbody>
-</table>
-
-{% else %}
-
-<h1>login</h1>
-<br/>
-<form method="POST" action="{% url 'home' %}">
-    {% csrf_token %}
-    <form>
-        <div class="mb-3">
-          <input type="text" class="form-control" name="username", placeholder="User Name">
-        </div><br/>
-        <div class="mb-3">
-          <input type="password" class="form-control" name="password", placeholder="Password">
+            </thead>
+            <tbody>
+              {% if items %}
+                {% for file_name, file_path, file_created, file_last_modified, form, form_id in items %}
+                    <tr>
+                        <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ file_name }}</td>
+                        {% if file_path is not True %}
+                            <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ file_path }}</td>
+                        {% else %}
+                            <td></td>
+                        {% endif %}
+                        <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ file_created }}</td>
+                        <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ file_last_modified }}</td>
+                        <td>
+                      <div class="dropdown">
+                        <button class="dropdown-item" onclick="toggleForm(this, {{ form_id }})">Upload File</button>
+                        <div class="dropdown-content" id="uploadForm{{ form_id }}" style="display: none;">
+                          <div class="container">
+                            <!-- Your dynamically generated form content -->
+                            <form id="uploadForm" action="{% url 'profile_image_upload' file_path=file_path %}" method="post" enctype="multipart/form-data" class="mt-5">
+                              {% csrf_token %}
+                              {{ form.as_p }}
+                              <button type="submit" onclick="getPath(this, {{file_path}})" class="btn btn-secondary">Submit</button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% endif %}
+            </tbody>
+          </table>
         </div>
-        <br/>
-        <button type="submit" class="btn btn-primary">login</button>
-    </form>
-</form>
-</div>
+      </div>
+    {% else %}
+      <header class="header">
+        <!-- ... (unchanged) ... -->
+      </header>
+    {% endif %}
+  </div>
 
-{% endif %}
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script>
+    function toggleForm(button, formId) {
+      var form = $('#uploadForm' + formId);
+      form.show();
+    }
+
+  function getPath(button, file_path) {
+      // Assuming 'file_path' is a string, modify this based on your data structure
+      var form = $(button).closest('form');
+      form.attr('action', form.attr('action') + '/' + encodeURIComponent(file_path));
+  }
+  </script>
+
 {% endblock %}

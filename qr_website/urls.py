@@ -12,10 +12,12 @@ urlpatterns = [
     path('login/', views.login_user, name='login'),
     path('logout/', views.logout_user, name='logout'),
     path('signup/', views.signup_user, name='signup'),
-    re_path(r'^upload/', ProfileImageView.as_view(), name='profile_image_upload'),
+    path('profile_image_upload/<str:file_path>/', ProfileImageView.as_view(), name='profile_image_upload'),
     path('excel_records/<str:pk>', views.excelRecord, name='e_record'),
     path('add_excel_file/', views.addExcelFile, name='add_excel_file'),
     path('delete_excel_file/<str:pk>', views.deleteExcelFile, name='delete_excel_file'),
     path('webcam/', views.index, name='webcam'),
-    path('cam_scan/', views.webcamScanned, name='cam_scan')
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('cam_scan/', views.webcamScanned, name='cam_scan'),
+    path('search_results', views.search_by_name_records, name='search_results'),
+
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

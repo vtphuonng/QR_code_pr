@@ -1,3 +1,5 @@
+import os
+
 from django.shortcuts import render, redirect
 from django.http.response import StreamingHttpResponse
 from django.template import loader
@@ -14,37 +16,44 @@ from .QR_genarator.QR_generator import *
 from .quicksort_search import *
 from .db.files_manager import files_generator
 from .QR_genarator.test2 import *
+from .quicksort_search import *
+from qr_website.db.files_manager import *
 
 
 def home(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
         # Authenticate
         user = authenticate(request, username=username, password=password)
+
         if user is not None:
             login(request, user)
-            messages.success(request, 'Access sucessfully')
+            messages.success(request, 'Access successfully')
             return redirect('home')
         else:
-            messages.success(request, 'login failed')
+            messages.error(request, 'Login failed')
             return redirect('home')
     else:
         file = files_generator()
         file_lst = file.getFiles()
-        file_name = []
-        file_path = []
-        file_created = []
-        file_last_modified = []
+
+        items = []
+        form_id_counter = 1
+
         for r in file_lst:
-            file_name.append(r[0])
-            file_path.append(r[1])
-            file_created.append(r[2])
-            file_last_modified.append(r[3])
-            items = zip(file_name, file_path, file_created, file_last_modified)
-        return render(request, 'home.html', {'items': items})
+            file_name = r[0]
+            file_path = r[1]
+            file_created = r[2]
+            file_last_modified = r[3]
 
+            form = ProfileImageForm()
+            items.append((file_name, file_path, file_created, file_last_modified, form, form_id_counter))
+            form_id_counter += 1
 
+        context = {'items': items, 'upload_form': ProfileImageForm()}
+        return render(request, 'home.html', context)
 def login_user(request):
     pass
 
@@ -116,29 +125,54 @@ def deleteExcelFile(request, pk):
         return redirect('home')
 
 
+# class ProfileImageView(FormView):
+#     template_name = 'home.html'
+#     form_class = ProfileImageForm
+#
+#     # def form_valid(self, form, excel_path):
+#     #     profile_image = ProfileImage(
+#     #         image=self.get_form_kwargs().get('files')['image'])
+#     #     profile_image.save()
+#     #     # time.sleep(3)
+#     #     # f = files_generator()
+#     #     # lst = f.getFiles()
+#     #     # excel_path = f.createFiles(lst)
+#     #     # print('pathpathpathpathpathpath')
+#     #     print(excel_path)
+#     #     m = qr_processing(excel_path)
+#     #     lst = m.get_dir()
+#     #     m.save_into_db(lst)
+#     #     return redirect('home')
+#     #
+#     # def post(self, request):
+#     #     # Handle POST request
+#     #     posted_data = request.POST.get('some_key', 'default_value')
+#     #     # Process the posted data as needed
+#     #     return HttpResponse(f'Posted data: {posted_data}')
+
 class ProfileImageView(FormView):
-    template_name = 'profile_image_form.html'
+    template_name = 'home.html'
     form_class = ProfileImageForm
 
     def form_valid(self, form):
-        profile_image = ProfileImage(
-            image=self.get_form_kwargs().get('files')['image'])
+        # Assuming 'file_path' is part of the URL, extract it from the kwargs
+        file_path = self.kwargs.get('file_path')
+
+        profile_image = ProfileImage(image=form.cleaned_data['image'])
         profile_image.save()
-        # time.sleep(3)
-        f = files_generator()
-        lst = f.getFiles()
-        excel_path = f.createFiles(lst)
-        print('pathpathpathpathpathpath')
-        print(excel_path)
-        m = qr_processing(excel_path)
+
+        # Use 'file_path' in your processing logic
+        m = qr_processing(file_path)
         lst = m.get_dir()
         m.save_into_db(lst)
+
         return redirect('home')
 
-    def get_success_url(self):
-        pass
-        # return reverse('profile_image_upload', kwargs={'pk': self.id})
-
+    def get_form_kwargs(self):
+        # Pass the request.FILES to the form so it can access uploaded files
+        kwargs = super().get_form_kwargs()
+        kwargs['files'] = self.request.FILES
+        return kwargs
 
 def index(request):
     cap = cv2.VideoCapture(0)
@@ -150,3 +184,21 @@ def index(request):
 
 def webcamScanned(requests):
     return StreamingHttpResponse(get_from_vid(), content_type='multipart/x-mixed-replace; boundary=frame')
+
+def search_by_name_records(request, searched):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            # look up record
+            searched = request.POST['searched']
+            folder_path = r'D:\VTP\python_workspaces\qr_pr\qr_website\db\excels'
+            excel_all = os.listdir(folder_path)
+            excel_path_list = []
+            for obj in folder_path:
+                excel_path_list.append(obj[1])
+            search_results = quick_select_by_id(excel_path_list, searched)
+            return render(request, 'simple_list.html', {"search_results":search_results})
+        else:
+            return redirect('home')
+    else:
+        messages.success(request, "You Must Be Logged In...")
+        return redirect('home')
