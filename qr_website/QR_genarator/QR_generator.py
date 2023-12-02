@@ -27,6 +27,7 @@ class qr_processing:
                 tb_name = tb2
             return db, tb_name
 
+    # Gửi danh sách chứa thông tin của các dữ liệu ảnh mới về hàm tương tác với database
     def save_into_db(self, img_folder):
         #path = get_lastest()
         q_list = []
@@ -42,6 +43,7 @@ class qr_processing:
         ex = save_ex(self.excel_path)
         ex.write_list_to_Excel(q_list, 2, 2)
 
+    # Trả về danh sách thông tin các mã QR mới được nhập
     def get_dir(self):
         get_file = os.listdir(self.path)
         print(get_file)

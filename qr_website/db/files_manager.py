@@ -5,7 +5,7 @@ import datetime
 class files_generator:
     def __init__(self):
         self.excelPath = r'D:\VTP\python_workspaces\qr_pr\qr_website\db\excels'
-
+    # Tạo file mới và trả về tên file mới được tạo, đường dẫn đến vị trí file
     def createFiles(self, files_list):
         valid_infor = self.checkTodayExisted(files_list)
         file_name = valid_infor[-1]
@@ -14,6 +14,8 @@ class files_generator:
         df = pd.DataFrame([[0, 0, 0]], columns=['Description', 'path', 'flag'])
         df.to_excel(f'{self.excelPath}\\{file_name}.xlsx')
         return f'{self.excelPath}\\{file_name}.xlsx'
+    
+    # Lấy danh sách các file excel hiện có trong hệ thống
     def getFiles(self):
         files_sys = os.listdir(self.excelPath)
         files_list = []
@@ -37,7 +39,7 @@ class files_generator:
                 files_list.append(row)
         # return [[filename, filepath], ...]
         return files_list
-
+    # kiểm tra xem file được gọi đã xuất hiện chưa
     @staticmethod
     def checkTodayExisted(files_list):
         today = date.today()

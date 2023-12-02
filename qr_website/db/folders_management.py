@@ -7,7 +7,7 @@ from openpyxl import load_workbook
 class sheetGenerator:
     def __init__(self, excel_path):
         self.excel_path = excel_path
-
+    # trả về excel được gọi 
     def getSheetPath(self):
         from openpyxl import load_workbook
         wb2 = load_workbook(self.excel_path)
@@ -29,13 +29,13 @@ class sheetGenerator:
         wb2.save(self.excel_path)
         wb2.close()
         return self.excel_path, current_month
-
+    # trả về danh sách các sheet hiện có trong file excel được gọi
     @staticmethod
     def getSheetList(excel_path):
         df = pd.read_excel(excel_path, None)
         sheet_list = (pd.ExcelFile(excel_path)).sheet_names
         return sheet_list
-
+    # Kiểm tra xem sheet trong file excel được gọi đã tồn tại chưa
     @staticmethod
     def checkExistedSheet(original_list, check_name):
         if check_name not in original_list:

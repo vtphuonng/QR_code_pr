@@ -42,6 +42,7 @@
                               {% csrf_token %}
                               {{ form.as_p }}
                               <button type="submit" onclick="getPath(this, {{file_path}})" class="btn btn-secondary">Submit</button>
+                             <a class="btn btn-secondary" href="{% url 'cam_scan' %}">Scan Image</a>
                             </form>
                           </div>
                         </div>

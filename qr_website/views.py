@@ -1,4 +1,4 @@
-import os
+import pandas as pd
 
 from django.shortcuts import render, redirect
 from django.http.response import StreamingHttpResponse
@@ -19,7 +19,7 @@ from .QR_genarator.test2 import *
 from .quicksort_search import *
 from qr_website.db.files_manager import *
 
-
+# kêt nối với giao diện home tr
 def home(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -84,13 +84,17 @@ def signup_user(request):
 
 def excelRecord(request, pk):
     if request.user.is_authenticated:
-        all = records.objects.all()
         # book_record = books.objects.get(book_id=pk)
-        c = to_list(all)
-        print(c)
-        e_records = quick_select_by_id(c, pk)
-        print(e_records)
-        return render(request, 'excel_records.html', {'e_records': e_records})
+        df = pd.read_excel(pk, 'T12')
+        records_list = df.values.tolist()
+        items = []
+        for r in records_list:
+            if r[1] != False:
+                record_description = r[1]
+                record_path = r[2]
+                items.append((record_description, record_path))
+        context = {'items': items}
+        return render(request, 'excel_records.html', context)
     else:
         messages.success(request, 'U must be logged in')
         return redirect('home')
@@ -150,6 +154,8 @@ def deleteExcelFile(request, pk):
 #     #     # Process the posted data as needed
 #     #     return HttpResponse(f'Posted data: {posted_data}')
 
+
+
 class ProfileImageView(FormView):
     template_name = 'home.html'
     form_class = ProfileImageForm
@@ -165,7 +171,7 @@ class ProfileImageView(FormView):
         m = qr_processing(file_path)
         lst = m.get_dir()
         m.save_into_db(lst)
-
+        messages.success(self.request, 'Upload successful')
         return redirect('home')
 
     def get_form_kwargs(self):
