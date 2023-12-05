@@ -6,9 +6,8 @@ class files_generator:
     def __init__(self):
         self.excelPath = r'D:\VTP\python_workspaces\qr_pr\qr_website\db\excels'
     # Tạo file mới và trả về tên file mới được tạo, đường dẫn đến vị trí file
-    def createFiles(self, files_list):
+    def createFiles(self, files_list, file_name):
         valid_infor = self.checkTodayExisted(files_list)
-        file_name = valid_infor[-1]
         if valid_infor[0] != False:
             return f'{self.excelPath}\\{file_name}.xlsx'
         df = pd.DataFrame([[0, 0, 0]], columns=['Description', 'path', 'flag'])

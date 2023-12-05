@@ -1,9 +1,44 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="content-container">
-    <img src="{% url 'cam_scan' %}" alt="">
-    <br/><br/>
-    <a href="{% url 'home' %}" class="btn btn-secondary back-button">Back</a>
+<div>
+  <!-- Your existing content goes here -->
+
+  <button id="startScan" class="btn btn-secondary">Start Scan</button>
+
+  <!-- Container for the scanned image -->
+  <div id="scannedImageContainer"></div>
+
+  <button id="finishScan" class="btn btn-secondary" style="display: none;">Finish Scan</button>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+  $(document).ready(function () {
+    var scannedImageContainer = $('#scannedImageContainer');
+    var finishScanButton = $('#finishScan');
+
+    // Handle the Start Scan button click event
+    $('#startScan').on('click', function () {
+      // Simulate scanning process
+      var scannedImage = $('<img src="{% url 'webcamScannedStream' file_path='' %}" alt="Scanned Image">');
+      scannedImageContainer.html(scannedImage);
+
+      // Show the Finish Scan button
+      finishScanButton.show();
+    });
+
+    // Handle the Finish Scan button click event
+    finishScanButton.on('click', function () {
+      // Perform any necessary actions
+      // ...
+
+      // Send a message indicating scan completion
+      // (You might want to implement this logic using AJAX)
+
+      // Hide the Finish Scan button
+      finishScanButton.hide();
+    });
+  });
+</script>
 {% endblock %}

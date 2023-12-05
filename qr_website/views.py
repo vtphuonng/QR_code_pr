@@ -130,8 +130,9 @@ def addExcelFile(request):
     if request.user.is_authenticated:
         if request.method == "POST":
             if form.is_valid():
-                add_record = form.save()
-                messages.success(request, "Record Added...")
+                m = files_generator()
+                m.createFiles('new.xlsx')
+                messages.success(request, "New Excel File created")
                 return redirect('home')
         return render(request, 'add_excel_file.html', {'form': form})
     else:
