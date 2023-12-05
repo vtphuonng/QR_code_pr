@@ -82,22 +82,42 @@ def signup_user(request):
     return render(request, 'signup.html', {'form': form})
 
 
+# views.py
+from django.shortcuts import render, redirect
+from django.contrib import messages
+import pandas as pd
+
+# views.py
+
 def excelRecord(request, pk):
     if request.user.is_authenticated:
-        # book_record = books.objects.get(book_id=pk)
-        df = pd.read_excel(pk, 'T12')
-        records_list = df.values.tolist()
-        items = []
-        for r in records_list:
-            if r[1] != False:
-                record_description = r[1]
-                record_path = r[2]
-                items.append((record_description, record_path))
-        context = {'items': items}
-        return render(request, 'excel_records.html', context)
+        try:
+            # Read the Excel file to get sheet names
+            xls = pd.ExcelFile(pk)
+            sheet_names = xls.sheet_names
+            xls.close()
+
+            # Get the selected sheet from the form submission
+            selected_sheet = request.GET.get('selected_sheet', '')
+            if not selected_sheet:
+                # Use the first sheet as default if not selected
+                selected_sheet = sheet_names[0]
+
+            # Read data from the selected sheet
+            df = pd.read_excel(pk, selected_sheet)
+            records_list = df.values.tolist()
+            items = [(r[1], r[2]) for r in records_list if r[1] and r[2]]
+
+            # Pass sheet names and data to the template
+            context = {'sheet_names': sheet_names, 'selected_sheet': selected_sheet, 'items': items, 'your_excel_file_id': pk}
+        except Exception as e:
+            messages.error(request, f"Error reading Excel file: {e}")
+            return redirect('home')
     else:
-        messages.success(request, 'U must be logged in')
+        messages.success(request, 'You must be logged in')
         return redirect('home')
+
+    return render(request, 'excel_records.html', context)
 
 
 def addExcelFile(request):

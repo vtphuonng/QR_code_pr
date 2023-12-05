@@ -1,4 +1,4 @@
-<!-- home.html -->
+<!-- excel_records.html -->
 {% extends 'base.html' %}
 
 {% block content %}
@@ -9,6 +9,18 @@
       </header>
 
       <div class="table-section">
+        <div class="mb-3">
+          <label for="sheetSelector" class="form-label">Select Sheet:</label>
+          <form method="GET" action="{% url 'e_record' your_excel_file_id %}">
+            {% csrf_token %}
+            <select class="form-select" id="sheetSelector" onchange="this.form.submit()" name="selected_sheet">
+              {% for sheet_name in sheet_names %}
+                <option value="{{ sheet_name }}" {% if sheet_name == selected_sheet %}selected{% endif %}>{{ sheet_name }}</option>
+              {% endfor %}
+            </select>
+          </form>
+        </div>
+
         <div class="table-responsive">
           <table class="table table-hover">
             <thead class="table-light">
@@ -20,11 +32,15 @@
             <tbody>
               {% if items %}
                 {% for description, path in items %}
-                    <tr>
-                        <td >{{ description }}</td>
-                        <td >{{ path }}</td>
+                  <tr>
+                    <td>{{ description }}</td>
+                    <td>{{ path }}</td>
                   </tr>
                 {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="2">No data available for the selected sheet.</td>
+                </tr>
               {% endif %}
             </tbody>
           </table>
@@ -34,20 +50,17 @@
       <h1>login</h1>
       <br/>
       <form method="POST" action="{% url 'home' %}">
-          {% csrf_token %}
-          <form>
-              <div class="mb-3">
-                <input type="text" class="form-control" name="username", placeholder="User Name">
-              </div><br/>
-              <div class="mb-3">
-                <input type="password" class="form-control" name="password", placeholder="Password">
-              </div>
-              <br\>
-              <button type="submit" class="btn btn-primary">login</button>
-            </form>
+        {% csrf_token %}
+        <div class="mb-3">
+          <input type="text" class="form-control" name="username" placeholder="User Name">
+        </div><br/>
+        <div class="mb-3">
+          <input type="password" class="form-control" name="password" placeholder="Password">
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary">login</button>
       </form>
       </div>
     {% endif %}
   </div>
-
 {% endblock %}
