@@ -1,6 +1,6 @@
 import pandas as pd
 from openpyxl import load_workbook
-from .folders_management import *
+from .sheet_management import *
 
 class save_ex:
     def __init__(self, path):
