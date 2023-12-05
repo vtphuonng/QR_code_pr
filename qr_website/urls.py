@@ -17,7 +17,7 @@ urlpatterns = [
     path('add_excel_file/', views.addExcelFile, name='add_excel_file'),
     path('delete_excel_file/<str:pk>', views.deleteExcelFile, name='delete_excel_file'),
     path('webcam/', views.index, name='webcam'),
-    path('cam_scan/', views.webcamScanned, name='cam_scan'),
+    path('cam_scan/<str:pk>/', views.webcamScanned, name='cam_scan'),
     path('search_results', views.search_by_name_records, name='search_results'),
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

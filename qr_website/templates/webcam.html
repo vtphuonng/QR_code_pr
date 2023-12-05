@@ -1,44 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<style>
-    body {
-        /* Add your background styles here */
-        background-color: #f0f0f0; /* Change to your preferred color */
-        /* or */
-        background-image: url('path/to/your/image.jpg'); /* Replace with your image path */
-        background-size: cover;
-        /* Add other background styles as needed */
-    }
-
-    /* Additional styles for the content */
-    .content-container {
-        max-width: 600px; /* Adjust as needed */
-        margin: 0 auto;
-        padding: 20px;
-        background-color: #ffffff; /* Set a background color for the content container */
-        border-radius: 8px; /* Add rounded corners if desired */
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
-    }
-
-    /* Additional styles for the image */
-    .content-container img {
-        width: 100%; /* Make the image fill its container */
-        border-radius: 4px; /* Add rounded corners if desired */
-    }
-
-    /* Additional styles for the back button */
-    .back-button {
-        display: block;
-        margin-top: 20px;
-        text-align: center;
-    }
-</style>
-
 <div class="content-container">
     <img src="{% url 'cam_scan' %}" alt="">
     <br/><br/>
     <a href="{% url 'home' %}" class="btn btn-secondary back-button">Back</a>
 </div>
-
 {% endblock %}

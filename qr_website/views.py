@@ -19,6 +19,7 @@ from .QR_genarator.test2 import *
 from .quicksort_search import *
 from qr_website.db.files_manager import *
 
+
 # kêt nối với giao diện home tr
 def home(request):
     if request.method == 'POST':
@@ -54,6 +55,8 @@ def home(request):
 
         context = {'items': items, 'upload_form': ProfileImageForm()}
         return render(request, 'home.html', context)
+
+
 def login_user(request):
     pass
 
@@ -87,6 +90,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 import pandas as pd
 
+
 # views.py
 
 def excelRecord(request, pk):
@@ -109,7 +113,8 @@ def excelRecord(request, pk):
             items = [(r[1], r[2]) for r in records_list if r[1] and r[2]]
 
             # Pass sheet names and data to the template
-            context = {'sheet_names': sheet_names, 'selected_sheet': selected_sheet, 'items': items, 'your_excel_file_id': pk}
+            context = {'sheet_names': sheet_names, 'selected_sheet': selected_sheet, 'items': items,
+                       'your_excel_file_id': pk}
         except Exception as e:
             messages.error(request, f"Error reading Excel file: {e}")
             return redirect('home')
@@ -175,7 +180,6 @@ def deleteExcelFile(request, pk):
 #     #     return HttpResponse(f'Posted data: {posted_data}')
 
 
-
 class ProfileImageView(FormView):
     template_name = 'home.html'
     form_class = ProfileImageForm
@@ -200,6 +204,7 @@ class ProfileImageView(FormView):
         kwargs['files'] = self.request.FILES
         return kwargs
 
+
 def index(request):
     cap = cv2.VideoCapture(0)
 
@@ -208,8 +213,9 @@ def index(request):
         return HttpResponse(template.render({}, request))
 
 
-def webcamScanned(requests):
-    return StreamingHttpResponse(get_from_vid(), content_type='multipart/x-mixed-replace; boundary=frame')
+def webcamScanned(requests, pk):
+    return StreamingHttpResponse(get_from_vid(pk), content_type='multipart/x-mixed-replace; boundary=frame')
+
 
 def search_by_name_records(request, searched):
     if request.user.is_authenticated:
@@ -222,7 +228,7 @@ def search_by_name_records(request, searched):
             for obj in folder_path:
                 excel_path_list.append(obj[1])
             search_results = quick_select_by_id(excel_path_list, searched)
-            return render(request, 'simple_list.html', {"search_results":search_results})
+            return render(request, 'simple_list.html', {"search_results": search_results})
         else:
             return redirect('home')
     else:

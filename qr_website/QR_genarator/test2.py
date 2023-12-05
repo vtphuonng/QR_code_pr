@@ -4,7 +4,7 @@ import cv2
 from openpyxl import Workbook
 from qr_website.db.To_excel import save_ex
 from qr_website.db.files_manager import *
-
+from qr_website.db.sheet_management import *
 
 def scan_image(cin_img, path):
     try:
@@ -30,7 +30,7 @@ def scan_image(cin_img, path):
         return e, cin_img, False
 
 
-def get_from_vid():
+def get_from_vid(excel_path):
     camera_id = 0
     delay = 5
     window_name = 'OpenCV QR Code'
@@ -39,9 +39,6 @@ def get_from_vid():
     cap = cv2.VideoCapture(camera_id)
     exited_count = os.listdir('D:\VTP\python_workspaces\qr_pr\qr_website\QR_genarator\image')
     img_counter = len(exited_count)
-    f = files_generator()
-    lst = f.getFiles()
-    excel_path = f.createFiles(lst)
     m = save_ex(excel_path)
     lst2 = []
     while True:

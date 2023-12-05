@@ -1,11 +1,11 @@
-import pandas as pd
-from openpyxl import load_workbook
 from .sheet_management import *
+
 
 class save_ex:
     def __init__(self, path):
         self.path = path
-    # Tìm, tương tác với file excel và lưu dữ liệu vào file excel đó    
+
+    # Tìm, tương tác với file excel và lưu dữ liệu vào file excel đó
     def write_list_to_Excel(self, lst, start_row, start_col, method=False):
         path_infor = self.getSheetPath(self.path)
         workbook = load_workbook(self.path)
@@ -60,12 +60,12 @@ class save_ex:
                 return True
         workbook.close()
         return False
+
     # lấy đường dẫn đến file excel
     @staticmethod
     def getSheetPath(excel_path):
         s = sheetGenerator(excel_path)
         return s.getSheetPath()[-1]
-
 
     @staticmethod
     def check_dup(origin_path, target_sheet, check_val):
@@ -79,7 +79,6 @@ class save_ex:
                 return True
         workbook.close()
         return False
-
 
     @staticmethod
     def checkEmpty(lst):
