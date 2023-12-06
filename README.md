@@ -6,6 +6,8 @@
 Người dùng có thể chọn file excel để lưu trữ dữ liệu upload mã QR bằng 2 phương thức: upload file ảnh hoặc quét mã bằng camera
 ### 2. Hiển thị danh sách dữ liệu:
 Danh sách các file excel dữ liệu, dữ liệu của từng file được hiển thị trên giao diện giúp người dùng thuận lợi trong việc quản lý file excel và dữ liệu
+### 3. Tạo file excel mới:
+Người dùng có thể tạo và đặt tên cho file excel mới
 ### ... Các tính năng khác sẽ được update dần
 
 ## Hướng dẫn cài đặt
