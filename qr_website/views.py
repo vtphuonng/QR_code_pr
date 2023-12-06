@@ -1,13 +1,15 @@
 import pandas as pd
 
 from django.shortcuts import render, redirect
-from django.http.response import StreamingHttpResponse
+from django.http.response import StreamingHttpResponse, JsonResponse
 from django.template import loader
 from django.views.generic import FormView, DetailView, ListView
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.http import HttpResponse
+from django.views.decorators.http import require_POST
+
 
 from .register_form import signup_form
 from .forms import ProfileImageForm, AddRecordForm
@@ -124,17 +126,20 @@ def excelRecord(request, pk):
 
     return render(request, 'excel_records.html', context)
 
-
+@require_POST
 def addExcelFile(request):
-    form = AddRecordForm(request.POST or None)
     if request.user.is_authenticated:
-        if request.method == "POST":
-            if form.is_valid():
-                m = files_generator()
-                m.createFiles('new.xlsx')
-                messages.success(request, "New Excel File created")
+        input_text = request.POST.get('customInput', '')
+        print('----------------',input_text)
+        if input_text:
+            fm = files_generator()
+            create_file = fm.createFiles(input_text)
+            if create_file[0] == True:
+                messages.success(request, "File Existed")
+                return JsonResponse({'message': 'File Existed', 'input_text': input_text})
+            else:
+                messages.success(request, "File Created")
                 return redirect('home')
-        return render(request, 'add_excel_file.html', {'form': form})
     else:
         messages.success(request, "You Must Be Logged In...")
         return redirect('home')
@@ -186,7 +191,6 @@ class ProfileImageView(FormView):
     form_class = ProfileImageForm
 
     def form_valid(self, form):
-        # Assuming 'file_path' is part of the URL, extract it from the kwargs
         file_path = self.kwargs.get('file_path')
 
         profile_image = ProfileImage(image=form.cleaned_data['image'])

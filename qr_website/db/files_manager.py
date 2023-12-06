@@ -6,13 +6,13 @@ class files_generator:
     def __init__(self):
         self.excelPath = r'D:\VTP\python_workspaces\qr_pr\qr_website\db\excels'
     # Tạo file mới và trả về tên file mới được tạo, đường dẫn đến vị trí file
-    def createFiles(self, files_list, file_name):
-        valid_infor = self.checkTodayExisted(files_list)
+    def createFiles(self, file_name):
+        valid_infor = self.checkExisted(file_name, self.excelPath)
         if valid_infor[0] != False:
-            return f'{self.excelPath}\\{file_name}.xlsx'
+            return True, f'{self.excelPath}\\{file_name}.xlsx'
         df = pd.DataFrame([[0, 0, 0]], columns=['Description', 'path', 'flag'])
         df.to_excel(f'{self.excelPath}\\{file_name}.xlsx')
-        return f'{self.excelPath}\\{file_name}.xlsx'
+        return False, f'{self.excelPath}\\{file_name}.xlsx'
     
     # Lấy danh sách các file excel hiện có trong hệ thống
     def getFiles(self):
@@ -48,6 +48,15 @@ class files_generator:
             if file_str == file_infor[0]:
                 return True, today_str
         return False, today_str
+
+    @staticmethod
+    def checkExisted(file_name, excel_path):
+        existed_file = os.listdir(excel_path)
+        target = file_name+'.xlsx'
+        for file_infor in existed_file:
+            if target in file_infor:
+                return True, target
+        return False, target
 #
 # f = files_generator()
 # # print(f.getFiles())

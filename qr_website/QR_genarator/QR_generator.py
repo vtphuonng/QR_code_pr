@@ -1,6 +1,6 @@
 from .test2 import *
 # from qr_website.db.db_generator import data_generation
-
+import shutil
 import os
 import glob
 from qr_website.db.To_excel import *
@@ -36,8 +36,12 @@ class qr_processing:
             scanned = scan_image(path, self.excel_path)
             if scanned[-1] == True:
                 scanned = list(scanned)
+                shutil.copy2(scanned[1], str(scanned[1].replace('profile', 'Image_storage')))
+                scanned[1] = str(scanned[1].replace('profile', 'Image_storage'))
                 q_list.append(scanned)
                 print(f'3 {scanned}')
+                os.remove(str(scanned[1].replace('Image_storage', 'profile')))
+
         print('------------------')
         print(self.excel_path)
         ex = save_ex(self.excel_path)
@@ -48,6 +52,7 @@ class qr_processing:
         get_file = os.listdir(self.path)
         print(get_file)
         return get_file
+
 
 # m = qr_processing(r'D:\VTP\python_workspaces\qr_pr\media\24-11-2023.xlsx')
 # lst = m.get_dir()
