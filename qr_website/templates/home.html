@@ -12,6 +12,7 @@
           <table class="table table-hover">
             <thead class="table-light">
               <tr>
+                <th scope="col"></th>
                 <th scope="col">Name</th>
                 <th scope="col">File Path</th>
                 <th scope="col">Create Day</th>
@@ -23,6 +24,9 @@
               {% if items %}
                 {% for file_name, file_path, file_created, file_last_modified, form, form_id in items %}
                     <tr>
+                        <td>
+                        <button type="submit" onclick="window.location.href='{% url 'delete_excel_file' file_path %}'" class="btn btn-light">Delete</button>
+                        </td>
                         <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ file_name }}</td>
                         {% if file_path is not True %}
                             <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ file_path }}</td>
@@ -36,7 +40,6 @@
                         <button class="dropdown-item" onclick="toggleForm(this, {{ form_id }})">Upload File</button>
                         <div class="dropdown-content" id="uploadForm{{ form_id }}" style="display: none;">
                           <div class="container">
-                            <!-- Your dynamically generated form content -->
                             <form id="uploadForm" action="{% url 'profile_image_upload' file_path=file_path %}" method="post" enctype="multipart/form-data" class="mt-5">
                               {% csrf_token %}
                               {{ form.as_p }}

@@ -145,21 +145,58 @@ def addExcelFile(request):
         return redirect('home')
 
 
-def deleteExcelFile(request, pk):
+def deleteExcelFile(request, deleted_file):
     if request.user.is_authenticated:
-        # delete_target = books.objects.get(book_id=pk)
-        all = records.objects.all()
-        c = to_list(all)
-        delete_target = quick_select_by_id(c, pk)
-        for i in delete_target:
-            i.delete()
-        messages.success(request, 'deleted')
+        fm = files_generator()
+        delete_mess = fm.deleteFile(deleted_file)
+        messages.success(request, delete_mess)
         return redirect('home')
     else:
         messages.success(request, 'U must be logged in')
         return redirect('home')
 
+def recycleBin(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
+        # Authenticate
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            messages.success(request, 'Access successfully')
+            return redirect('home')
+        else:
+            messages.error(request, 'Login failed')
+            return redirect('home')
+    else:
+        file = recycleManage()
+        file_lst = file.getDummy()
+
+        items = []
+        form_id_counter = 1
+
+        for r in file_lst:
+            file_name = r[0]
+            file_path = r[1]
+            create_time = r[2]
+            deleted_time = r[3]
+            items.append((file_name, file_path, create_time, deleted_time, form_id_counter))
+            form_id_counter += 1
+
+        context = {'items': items}
+        return render(request, 'recycleBin.html', context)
+
+def recoveryFile(request, recovey_file):
+    if request.user.is_authenticated:
+        fm = files_generator()
+        recovery_mess = fm.recoveryFile(recovey_file)
+        messages.success(request, recovery_mess)
+        return redirect('home')
+    else:
+        messages.success(request, 'U must be logged in')
+        return redirect('home')
 # class ProfileImageView(FormView):
 #     template_name = 'home.html'
 #     form_class = ProfileImageForm

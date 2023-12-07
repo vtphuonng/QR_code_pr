@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'base.html' %}
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% block content %}
+  <div class="container">
+    {% if user.is_authenticated %}
+      <div class="mb-3">
+        <a href="{% url 'home' %}" class="btn btn-primary">Back</a>
+      </div>
+      <div class="table-section">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead class="table-light">
+              <tr>
+                  <th scope="col"> </th>
+                  <th scope="col"> </th>
+                <th scope="col">Name</th>
+                <th scope="col">File Path</th>
+                <th scope="col">Create Day</th>
+                <th scope="col">Deleted Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if items %}
+                {% for file_name, file_path, create_time, deleted_time, form_id_counter in items %}
+                    <tr>
+                        <td>
+                        <button type="button" class="btn btn-light" onclick="window.location.href='{% url 'delete_excel_file' file_path %}'" >Delete</button>
+                        </td>
+                        <td>
+                        <button type="button" class="btn btn-light" onclick="window.location.href='{% url 'recovery_path' file_path %}'" >Recovey</button>
+                        </td>
+                        <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ file_name }}</td>
+                        {% if file_path is not True %}
+                            <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ file_path }}</td>
+                        {% else %}
+                            <td></td>
+                        {% endif %}
+                        <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ create_time }}</td>
+                        <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ deleted_time }}</td>
+                  </tr>
+                {% endfor %}
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% else %}
+      <h1>login</h1>
+      <br/>
+      <form method="POST" action="{% url 'home' %}">
+          {% csrf_token %}
+          <form>
+              <div class="mb-3">
+                <input type="text" class="form-control" name="username", placeholder="User Name">
+              </div><br/>
+              <div class="mb-3">
+                <input type="password" class="form-control" name="password", placeholder="Password">
+              </div>
+              <button type="submit" class="btn btn-primary">login</button>
+            </form>
+      </form>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}
+</body>
+</html>

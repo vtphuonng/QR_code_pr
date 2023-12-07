@@ -2,6 +2,7 @@ import os
 import pandas as pd
 from datetime import date
 import datetime
+from pathlib import Path
 class files_generator:
     def __init__(self):
         self.excelPath = r'D:\VTP\python_workspaces\qr_pr\qr_website\db\excels'
@@ -23,7 +24,7 @@ class files_generator:
             if file.endswith('.xlsx'):
                 target_path = f'{self.excelPath}\\{file}'
                 create_time = os.path.getctime(target_path)
-                last_modified = os.path.getctime(target_path)
+                last_modified = os.path.getmtime(target_path)
                 create_date = datetime.datetime.fromtimestamp(create_time).strftime('%d-%m-%Y %H:%M:%S')
                 last_modified_date = datetime.datetime.fromtimestamp(last_modified).strftime('%d-%m-%Y %H:%M:%S')
                 # row = [file, target_path, create_date, last_modified_date]
@@ -57,7 +58,44 @@ class files_generator:
             if target in file_infor:
                 return True, target
         return False, target
-#
+
+    def deleteFile(self, file_path):
+        recycle_path = str(file_path).replace('excels', 'recycleBin')
+        os.replace(file_path, recycle_path)
+        return 'File Deleted'
+
+    def recoveryFile(self, recycle_path):
+        recover_path = str(recycle_path).replace('recycleBin', 'excels')
+        os.replace(recycle_path, recover_path)
+        return 'File Recovered'
+
+class recycleManage(files_generator):
+    def getDummy(self):
+        try:
+            recycle_path = str(self.excelPath).replace('excels', 'recycleBin')
+            print('f1'+recycle_path)
+            dum_list = os.listdir(rf'{recycle_path}')
+            lst = []
+            if dum_list == 0:
+                return lst
+            for dum in dum_list:
+                row = []
+                dum_name = dum
+                dum_path = f"{recycle_path}\\{dum}"
+                deleted_time = os.path.getmtime(f'{recycle_path}')
+                create_time = os.path.getctime(f'{dum_path}')
+                print('F2'+str(create_time))
+                create_date = datetime.datetime.fromtimestamp(create_time).strftime('%d-%m-%Y %H:%M:%S')
+                delete_date = datetime.datetime.fromtimestamp(deleted_time).strftime('%d-%m-%Y %H:%M:%S')
+                row.append(dum_name)
+                row.append(dum_path)
+                row.append(create_date)
+                row.append(delete_date)
+                lst.append(row)
+            return lst
+        except Exception as e:
+            print(e)
+            return []
 # f = files_generator()
 # # print(f.getFiles())
 # lst = f.getFiles()
