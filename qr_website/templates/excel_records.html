@@ -20,7 +20,13 @@
             </select>
           </form>
         </div>
-
+      <div class="mb-3">
+        {% if tail %}
+          <a href="{% url 'bin_list' %}" class="btn btn-primary">Back</a>
+        {% else %}
+          <a href="{% url 'home' %}" class="btn btn-primary">Back</a>
+        {% endif %}
+      </div>
         <div class="table-responsive">
           <table class="table table-hover">
             <thead class="table-light">

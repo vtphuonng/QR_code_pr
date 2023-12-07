@@ -44,7 +44,6 @@ def home(request):
 
         items = []
         form_id_counter = 1
-
         for r in file_lst:
             file_name = r[0]
             file_path = r[1]
@@ -106,17 +105,21 @@ def excelRecord(request, pk):
             # Get the selected sheet from the form submission
             selected_sheet = request.GET.get('selected_sheet', '')
             if not selected_sheet:
-                # Use the first sheet as default if not selected
                 selected_sheet = sheet_names[0]
 
             # Read data from the selected sheet
             df = pd.read_excel(pk, selected_sheet)
             records_list = df.values.tolist()
+
             items = [(r[1], r[2]) for r in records_list if r[1] and r[2]]
 
-            # Pass sheet names and data to the template
-            context = {'sheet_names': sheet_names, 'selected_sheet': selected_sheet, 'items': items,
-                       'your_excel_file_id': pk}
+            if 'recycleBin' in str(pk):
+                tail = Path("/tmp/d/a.dat").name
+                context = {'sheet_names': sheet_names, 'selected_sheet': selected_sheet, 'items': items,
+                           'your_excel_file_id': pk, 'tail': tail}
+            else:
+                context = {'sheet_names': sheet_names, 'selected_sheet': selected_sheet, 'items': items,
+                           'your_excel_file_id': pk}
         except Exception as e:
             messages.error(request, f"Error reading Excel file: {e}")
             return redirect('home')
