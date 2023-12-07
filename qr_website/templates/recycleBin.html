@@ -50,8 +50,25 @@
                           }
                         </script>
                         <td>
-                        <button type="button" class="btn btn-light" onclick="window.location.href='{% url 'recovery_path' file_path %}'" >Recovey</button>
+                          <button type="button" class="btn btn-light" onclick="confirmRecovery(this)" data-filepath="{{ file_path }}">Recovey</button>
                         </td>
+                        <script>
+                          // Define a global variable to store the URL pattern
+                          var rmFileUrlPattern = '{% url "recovery_path" file_path %}';
+
+                          function confirmRecovery(button) {
+                            var filePath = button.getAttribute('data-filepath');
+                            console.log(filePath);
+                            var result = confirm("Are you sure you want to recovery this file?");
+                            if (result) {
+                              // Use the global variable to replace the placeholder
+                              var deleteUrl = rmFileUrlPattern.replace('rm_file', filePath);
+                              window.location.href = deleteUrl;
+                            } else {
+                              // If the user clicks "Cancel", do nothing
+                            }
+                          }
+                        </script>
                         <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ file_name }}</td>
                         {% if file_path is not True %}
                             <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ file_path }}</td>

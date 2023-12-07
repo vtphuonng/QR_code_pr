@@ -25,8 +25,25 @@
                 {% for file_name, file_path, file_created, file_last_modified, form, form_id in items %}
                     <tr>
                         <td>
-                        <button type="submit" onclick="window.location.href='{% url 'delete_excel_file' file_path %}'" class="btn btn-light">Delete</button>
+                          <button type="button" class="btn btn-light" onclick="confirmDelete(this)" data-filepath="{{ file_path }}">Delete</button>
                         </td>
+                        <script>
+                          // Define a global variable to store the URL pattern
+                          var rmFileUrlPattern = '{% url "delete_excel_file" file_path %}';
+
+                          function confirmDelete(button) {
+                            var filePath = button.getAttribute('data-filepath');
+                            console.log(filePath);
+                            var result = confirm("Are you sure you want to recovery this file?");
+                            if (result) {
+                              // Use the global variable to replace the placeholder
+                              var deleteUrl = rmFileUrlPattern.replace('rm_file', filePath);
+                              window.location.href = deleteUrl;
+                            } else {
+                              // If the user clicks "Cancel", do nothing
+                            }
+                          }
+                        </script>
                         <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ file_name }}</td>
                         {% if file_path is not True %}
                             <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ file_path }}</td>
