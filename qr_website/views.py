@@ -114,7 +114,7 @@ def excelRecord(request, pk):
             items = [(r[1], r[2]) for r in records_list if r[1] and r[2]]
 
             if 'recycleBin' in str(pk):
-                tail = Path("/tmp/d/a.dat").name
+                tail = Path(pk).name
                 context = {'sheet_names': sheet_names, 'selected_sheet': selected_sheet, 'items': items,
                            'your_excel_file_id': pk, 'tail': tail}
             else:

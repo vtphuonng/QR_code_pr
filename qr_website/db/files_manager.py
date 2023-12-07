@@ -96,6 +96,11 @@ class recycleManage(files_generator):
         except Exception as e:
             print(e)
             return []
+
+    def removeFile(self):
+        recycle_path = str(self.excelPath).replace('excels', 'recycleBin')
+        os.remove(recycle_path)
+        return 'File Is Abandoned From Recycle Bin'
 # f = files_generator()
 # # print(f.getFiles())
 # lst = f.getFiles()
