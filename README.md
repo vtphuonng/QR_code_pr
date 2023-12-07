@@ -8,6 +8,12 @@ Người dùng có thể chọn file excel để lưu trữ dữ liệu upload m
 Danh sách các file excel dữ liệu, dữ liệu của từng file được hiển thị trên giao diện giúp người dùng thuận lợi trong việc quản lý file excel và dữ liệu
 ### 3. Tạo file excel mới:
 Người dùng có thể tạo và đặt tên cho file excel mới
+### 4. Xem file excel đã xóa:
+Người dùng có thể xem những file excel đã xóa nằm trong mục Recycle Bin
+### 5. Xóa file excel:
+Người dùng có thể xóa file excel hiện có sau khi đã xác nhận chắc chắn xóa file
+### 6. Khôi phục/ xóa hẳn file excel:
+Người dùng có thể khôi phục hoặc xóa hẳn khỏi hệ thống sau khi đã xác nhận những file excel trong Recycle Bin
 ### ... Các tính năng khác sẽ được update dần
 
 ## Hướng dẫn cài đặt
