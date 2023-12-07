@@ -191,6 +191,17 @@ def recycleBin(request):
         context = {'items': items}
         return render(request, 'recycleBin.html', context)
 
+def removeFile(request, rm_file):
+    if request.user.is_authenticated:
+        print('F4', rm_file)
+        fm = recycleManage()
+        delete_mess = fm.removeFile(rm_file)
+        messages.success(request, delete_mess)
+        return redirect('home')
+    else:
+        messages.success(request, 'U must be logged in')
+        return redirect('home')
+
 def recoveryFile(request, recovey_file):
     if request.user.is_authenticated:
         fm = files_generator()

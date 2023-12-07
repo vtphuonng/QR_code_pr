@@ -16,6 +16,7 @@ urlpatterns = [
     path('excel_records/<str:pk>/', views.excelRecord, name='e_record'),
     path('add_excel_file/', views.addExcelFile, name='add_excel_file'),
     path('delete_excel_file/<str:deleted_file>', views.deleteExcelFile, name='delete_excel_file'),
+    path('remove/<str:rm_file>', views.removeFile, name='rm_file'),
     path('webcam/', views.index, name='webcam'),
     path('cam_scan/<str:pk>/', views.webcamScanned, name='cam_scan'),
     path('search_results', views.search_by_name_records, name='search_results'),
