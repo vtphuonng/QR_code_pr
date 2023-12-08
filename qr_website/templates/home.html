@@ -34,7 +34,7 @@
                           function confirmDelete(button) {
                             var filePath = button.getAttribute('data-filepath');
                             console.log(filePath);
-                            var result = confirm("Are you sure you want to recovery this file?");
+                            var result = confirm("Are you sure you want to delete this file?");
                             if (result) {
                               // Use the global variable to replace the placeholder
                               var deleteUrl = rmFileUrlPattern.replace('rm_file', filePath);
