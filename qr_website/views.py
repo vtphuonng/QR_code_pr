@@ -14,6 +14,7 @@ from django.views.decorators.http import require_POST
 from .register_form import signup_form
 from .forms import ProfileImageForm, AddRecordForm
 from .models import ProfileImage, records
+from django.forms.models import model_to_dict
 from .QR_genarator.QR_generator import *
 from .quicksort_search import *
 from .db.files_manager import files_generator
@@ -207,10 +208,10 @@ def recoveryFile(request, recovey_file):
         fm = files_generator()
         recovery_mess = fm.recoveryFile(recovey_file)
         messages.success(request, recovery_mess)
-        return redirect('home')
+        return redirect('bin_list')
     else:
         messages.success(request, 'U must be logged in')
-        return redirect('home')
+        return redirect('bin_list')
 # class ProfileImageView(FormView):
 #     template_name = 'home.html'
 #     form_class = ProfileImageForm
@@ -273,20 +274,169 @@ def webcamScanned(requests, pk):
     return StreamingHttpResponse(get_from_vid(pk), content_type='multipart/x-mixed-replace; boundary=frame')
 
 
-def search_by_name_records(request, searched):
+def search_by_name_records(request):
     if request.user.is_authenticated:
-        if request.method == 'POST':
-            # look up record
-            searched = request.POST['searched']
-            folder_path = r'D:\VTP\python_workspaces\qr_pr\qr_website\db\excels'
-            excel_all = os.listdir(folder_path)
-            excel_path_list = []
-            for obj in folder_path:
-                excel_path_list.append(obj[1])
-            search_results = quick_select_by_id(excel_path_list, searched)
-            return render(request, 'simple_list.html', {"search_results": search_results})
-        else:
-            return redirect('home')
+        query = request.GET.get('q')
+
+        rm = recycleManage()
+        lst = rm.getDummy()
+        print(lst)
+        items = []
+        cache1 = []
+        cache2 = []
+        form_id_counter = 0
+        exits_counter = 0
+        no_exits_counter = 0
+        cache3 = []
+        for r in lst:
+            if query and query in r[0]:
+                print(r[0])
+                print('SEARCH IN')
+                file_name = r[0]
+                file_path = r[1]
+                create_time = r[2]
+                deleted_time = r[3]
+                cache1.append({
+                    'file_name': file_name,
+                    'file_path': file_path,
+                    'create_time': create_time,
+                    'deleted_time': deleted_time,
+                    'form_id_counter': form_id_counter
+                })
+                form_id_counter += 1
+                exits_counter += 1
+            elif query and query not in r[0]:
+                cache3.append({
+                    'file_name': 'Not Found',
+                    'file_path': 'Not Found',
+                    'create_time': 'Not Found',
+                    'deleted_time': 'Not Found',
+                })
+            else:
+                print('SEARCH IN')
+                file_name = r[0]
+                file_path = r[1]
+                create_time = r[2]
+                deleted_time = r[3]
+                cache2.append({
+                    'file_name': file_name,
+                    'file_path': file_path,
+                    'create_time': create_time,
+                    'deleted_time': deleted_time,
+                    'form_id_counter': form_id_counter
+                })
+                form_id_counter += 1
+
+        if exits_counter != 0:
+            print('FP', query)
+            print('FP2', cache1)
+            items = cache1
+            return JsonResponse({'items': items})
+        elif no_exits_counter != 0:
+            items = cache3
+            return JsonResponse({'items': items})
+        print('FP', query)
+        print('FP2', cache2)
+        items = cache2
+        return JsonResponse({'items': items})
+
     else:
         messages.success(request, "You Must Be Logged In...")
         return redirect('home')
+
+def searchHome(request):
+    if request.user.is_authenticated:
+        query = request.GET.get('q')
+
+        fm = files_generator()
+        lst = fm.getFiles()
+
+        items = []
+        cache1 = []
+        cache2 = []
+        cache3 = []
+        form_id_counter = 0
+        exits_counter = 0
+        no_exists_counter = 0
+
+        for r in lst:
+            if query and query in r[0]:
+                file_name = r[0]
+                file_path = r[1]
+                file_created = r[2]
+                file_last_modified = r[3]
+                form = ProfileImageForm()
+                form_data = {field_name: form[field_name].value() for field_name in form.fields}
+                cache1.append({
+                    'file_name': file_name,
+                    'file_path': file_path,
+                    'create_time': file_created,
+                    'file_last_modified': file_last_modified,
+                    'form': form_data,
+                    'form_id_counter': form_id_counter
+                })
+                form_id_counter += 1
+                exits_counter += 1
+            elif query and query not in r[0]:
+                no_exists_counter += 1
+                cache3.append({
+                    'file_name': 'Not Found',
+                    'file_path': 'Not Found',
+                    'create_time': 'Not Found',
+                    'file_last_modified': 'Not Found',
+                })
+            else:
+                file_name = r[0]
+                file_path = r[1]
+                file_created = r[2]
+                file_last_modified = r[3]
+                form = ProfileImageForm()
+                form_data = {field_name: form[field_name].value() for field_name in form.fields}
+                cache2.append({
+                    'file_name': file_name,
+                    'file_path': file_path,
+                    'create_time': file_created,
+                    'file_last_modified': file_last_modified,
+                    'form': form_data,
+                    'form_id_counter': form_id_counter
+                })
+                form_id_counter += 1
+
+        if exits_counter != 0:
+            items = cache1
+            return JsonResponse({'items': items})
+        elif no_exists_counter != 0:
+            items = cache3
+            return JsonResponse({'items': items})
+        items = cache2
+        return JsonResponse({'items': items})
+
+    else:
+        messages.success(request, "You Must Be Logged In...")
+        return redirect('home')
+    
+# views.py
+from django.http import FileResponse, HttpResponse
+from django.views import View
+from django.shortcuts import get_object_or_404
+from .models import MyModel
+import os
+
+class ExcelFileDownloadView(View):
+    def get(self, request, pk):
+        # Retrieve the corresponding MyModel instance based on the file path
+        my_model_instance = get_object_or_404(MyModel, file_path=pk)
+
+        # Construct the full file path using the separate folder
+        file_path = os.path.join('path_to_your_separate_folder', my_model_instance.file_path)
+
+        # Ensure the file exists before attempting to open it
+        if os.path.exists(file_path):
+            with open(file_path, 'rb') as excel_file:
+                response = FileResponse(excel_file)
+                response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file_path)}"'
+                return response
+        else:
+            # Handle the case where the file does not exist
+            return HttpResponse("File not found", status=404)
+

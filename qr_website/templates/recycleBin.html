@@ -11,6 +11,9 @@
     {% if user.is_authenticated %}
       <h1>Recycle Bin</h1>
       <div class="mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+      </div>
+      <div class="mb-3">
         <a href="{% url 'home' %}" class="btn btn-primary">Back</a>
       </div>
       <div class="table-section">
@@ -26,12 +29,12 @@
                 <th scope="col">Deleted Time</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="tableBody">
               {% if items %}
                 {% for file_name, file_path, create_time, deleted_time, form_id_counter in items %}
                     <tr>
                         <td>
-                          <button type="button" class="btn btn-light" onclick="confirmDelete(this)" data-filepath="{{ file_path }}">Delete</button>
+                          <button type="button" class="btn btn-light" onclick="confirmDelete(this)" data-filepath="{{ file_name }}">Delete</button>
                         </td>
                         <script>
                           // Define a global variable to store the URL pattern
@@ -105,7 +108,39 @@
   </div>
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#searchInput").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $.ajax({
+                url: "{% url 'search_results' %}",
+                data: { 'q': value },
+                dataType: 'json',
+                success: function (data) {
+                    // Update the table with search results
+                    var tableBody = $('#tableBody');
+                    tableBody.empty();
+                    $.each(data.items, function (index, item) {
+                        var row = '<tr>';
+                        row += '</tr>';
+                        row += '<td>';
+                        row += '<button type="button" class="btn btn-light" onclick="confirmDelete(this)" data-filepath="' + item.file_path + '">Delete</button>';
+                        row += '</td>';
+                        row += '<td>';
+                        row += '<button type="button" class="btn btn-light" onclick="confirmRecovery(this)" data-filepath="' + item.file_path + '">Recovery</button>';
+                        row += '</td>';
+                        row += '<td>' + item.file_name + '</td>';
+                        row += '<td>' + item.file_path + '</td>';
+                        row += '<td>' + item.create_time + '</td>';
+                        row += '<td>' + item.deleted_time + '</td>';
+                        tableBody.append(row);
+                    });
+                }
+            });
+        });
+    });
 
+</script>
 {% endblock %}
 </body>
 </html>

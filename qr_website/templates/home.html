@@ -5,6 +5,9 @@
   <div class="container">
     {% if user.is_authenticated %}
       <div class="mb-3">
+        <input type="text" id="searchInputs" class="form-control" placeholder="Search...">
+      </div>
+      <div class="mb-3">
         <a id="createNewButton" class="btn btn-primary">Create New</a>
       </div>
       <div class="table-section">
@@ -13,6 +16,7 @@
             <thead class="table-light">
               <tr>
                 <th scope="col"></th>
+                <th scope="col"></th>
                 <th scope="col">Name</th>
                 <th scope="col">File Path</th>
                 <th scope="col">Create Day</th>
@@ -20,13 +24,17 @@
                 <th scope="col"> Upload </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="tableBody">
               {% if items %}
                 {% for file_name, file_path, file_created, file_last_modified, form, form_id in items %}
                     <tr>
+                      <td>
+                        <a class="btn btn-success" href="{% url 'file_download' pk=file_path %}" download>Download</a>
+                      </td>
                         <td>
                           <button type="button" class="btn btn-light" onclick="confirmDelete(this)" data-filepath="{{ file_path }}">Delete</button>
                         </td>
+
                         <script>
                           // Define a global variable to store the URL pattern
                           var rmFileUrlPattern = '{% url "delete_excel_file" file_path %}';
@@ -99,7 +107,6 @@
           </div>
         </div>
       </div>
-
     {% else %}
       <h1>login</h1>
       <br/>
@@ -161,5 +168,35 @@
       form.attr('action', form.attr('action') + '/' + encodeURIComponent(file_path));
   }
   </script>
+      <script>
+          $(document).ready(function () {
+            $("#searchInputs").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $.ajax({
+                    url: "{% url 'search_home' %}",
+                    data: { 'q': value },
+                    dataType: 'json',
+                    success: function (data) {
+                        // Update the table with search results
+                        var tableBody = $('#tableBody');
+                        tableBody.empty();
+                        $.each(data.items, function (index, item) {
+                            var row = '<tr>';
+                            row += '<td>';
+                            row += '<button type="button" class="btn btn-light" onclick="confirmDelete(this)" data-filepath="' + item.file_path + '">Delete</button>';
+                            row += '</td>';
+                            row += '<td>' + item.file_name + '</td>';
+                            row += '<td>' + item.file_path + '</td>';
+                            row += '<td>' + item.create_time + '</td>';
+                            row += '<td>' + item.file_last_modified + '</td>';
+                            row += '<td>'
+                            row += '<div class="dropdown">';
+                            tableBody.append(row);
+                        });
+                    }
+                });
+            });
+        });
+      </script>
 
 {% endblock %}

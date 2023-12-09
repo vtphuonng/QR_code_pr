@@ -3,6 +3,10 @@ from django.db import models
 class ProfileImage(models.Model):
     image = models.FileField(upload_to='profile')
 
+class MyModel(models.Model):
+    file = models.FileField(upload_to='your_upload_path/')
+    file_path = models.CharField(max_length=255) 
+
 class records(models.Model):
     excel_id = models.CharField(max_length=255,primary_key=True)
     name = models.CharField(max_length=255)

@@ -22,5 +22,9 @@ urlpatterns = [
     path('search_results', views.search_by_name_records, name='search_results'),
     path('bin_list', views.recycleBin, name='bin_list'),
     path('recovery<str:recovey_file>', views.recoveryFile, name='recovery_path'),
+    path('search/', views.search_by_name_records, name='search_results'),
+    path('search_home/', views.searchHome, name='search_home'),
+    path('download/<path:pk>/', views.ExcelFileDownloadView.as_view(), name='file_download'),
+
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
