@@ -45,7 +45,7 @@
                             var result = confirm("Are you sure you want to delete this file?");
                             if (result) {
                               // Use the global variable to replace the placeholder
-                              var deleteUrl = rmFileUrlPattern.replace('rm_file', filePath);
+                              var deleteUrl = rmFileUrlPattern.replace('file_path', filePath);
                               window.location.href = deleteUrl;
                             } else {
                               // If the user clicks "Cancel", do nothing
@@ -168,35 +168,35 @@
       form.attr('action', form.attr('action') + '/' + encodeURIComponent(file_path));
   }
   </script>
-      <script>
-          $(document).ready(function () {
-            $("#searchInputs").on("keyup", function () {
-                var value = $(this).val().toLowerCase();
-                $.ajax({
-                    url: "{% url 'search_home' %}",
-                    data: { 'q': value },
-                    dataType: 'json',
-                    success: function (data) {
-                        // Update the table with search results
-                        var tableBody = $('#tableBody');
-                        tableBody.empty();
-                        $.each(data.items, function (index, item) {
-                            var row = '<tr>';
-                            row += '<td>';
-                            row += '<button type="button" class="btn btn-light" onclick="confirmDelete(this)" data-filepath="' + item.file_path + '">Delete</button>';
-                            row += '</td>';
-                            row += '<td>' + item.file_name + '</td>';
-                            row += '<td>' + item.file_path + '</td>';
-                            row += '<td>' + item.create_time + '</td>';
-                            row += '<td>' + item.file_last_modified + '</td>';
-                            row += '<td>'
-                            row += '<div class="dropdown">';
-                            tableBody.append(row);
-                        });
-                    }
-                });
-            });
-        });
-      </script>
+<!--      <script>-->
+<!--          $(document).ready(function () {-->
+<!--            $("#searchInputs").on("keyup", function () {-->
+<!--                var value = $(this).val().toLowerCase();-->
+<!--                $.ajax({-->
+<!--                    url: "{% url 'search_home' %}",-->
+<!--                    data: { 'q': value },-->
+<!--                    dataType: 'json',-->
+<!--                    success: function (data) {-->
+<!--                        // Update the table with search results-->
+<!--                        var tableBody = $('#tableBody');-->
+<!--                        tableBody.empty();-->
+<!--                        $.each(data.items, function (index, item) {-->
+<!--                            var row = '<tr>';-->
+<!--                            row += '<td>';-->
+<!--                            row += '<button type="button" class="btn btn-light" onclick="confirmDelete(this)" data-filepath="' + item.file_path + '">Delete</button>';-->
+<!--                            row += '</td>';-->
+<!--                            row += '<td>' + item.file_name + '</td>';-->
+<!--                            row += '<td>' + item.file_path + '</td>';-->
+<!--                            row += '<td>' + item.create_time + '</td>';-->
+<!--                            row += '<td>' + item.file_last_modified + '</td>';-->
+<!--                            row += '<td>'-->
+<!--                            row += '<div class="dropdown">';-->
+<!--                            tableBody.append(row);-->
+<!--                        });-->
+<!--                    }-->
+<!--                });-->
+<!--            });-->
+<!--        });-->
+<!--      </script>-->
 
 {% endblock %}
