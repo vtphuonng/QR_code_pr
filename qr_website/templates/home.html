@@ -32,26 +32,9 @@
                         <a class="btn btn-success" href="{% url 'file_download' pk=file_path %}" download>Download</a>
                       </td>
                         <td>
-                          <button type="button" class="btn btn-light" onclick="window.location.href='{% url 'delete_excel_file' file_path %}';">Delete</button>
+                          <button type="button" class="btn btn-light"  onclick="confirmDelete(this)" data-filepath="{{ file_path }}">Delete</button>
                         </td>
 
-<!--                        <script>-->
-<!--                          // Define a global variable to store the URL pattern-->
-<!--                          var rmFileUrlPattern = '{% url "delete_excel_file" file_path %}';-->
-
-<!--                          function confirmDelete(button) {-->
-<!--                            var filePath = button.getAttribute('data-filepath');-->
-<!--                            console.log(filePath);-->
-<!--                            var result = confirm("Are you sure you want to delete this file?");-->
-<!--                            if (result) {-->
-<!--                              // Use the global variable to replace the placeholder-->
-<!--                              var deleteUrl = rmFileUrlPattern.replace('file_path', filePath);-->
-<!--                              window.location.href = deleteUrl;-->
-<!--                            } else {-->
-<!--                              // If the user clicks "Cancel", do nothing-->
-<!--                            }-->
-<!--                          }-->
-<!--                        </script>-->
                         <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ file_name }}</td>
                         {% if file_path is not True %}
                             <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ file_path }}</td>
@@ -128,6 +111,26 @@
 
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script>
+                        <script>
+    function confirmDelete(button) {
+        var filePath = button.getAttribute('data-filepath');
+        console.log(filePath);
+
+        // Check if filePath is not empty and not undefined
+        if (filePath) {
+            var deleteUrl = '{% url "delete_excel_file" deleted_file="__placeholder__" %}'.replace('__placeholder__', encodeURIComponent(filePath));
+            var result = confirm("Are you sure you want to delete this file?");
+
+            if (result) {
+                window.location.href = deleteUrl;
+            } else {
+                // If the user clicks "Cancel", do nothing
+            }
+        } else {
+            console.error("File path is empty or undefined.");
+        }
+    }
+                        </script>
   <script>
       $('#createNewButton').on('click', function() {
         $('#createNewModal').modal('show');

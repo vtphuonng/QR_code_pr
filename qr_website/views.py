@@ -198,7 +198,7 @@ def removeFile(request, rm_file):
         fm = recycleManage()
         delete_mess = fm.removeFile(rm_file)
         messages.success(request, delete_mess)
-        return redirect('home')
+        return redirect('bin_list')
     else:
         messages.success(request, 'U must be logged in')
         return redirect('home')
@@ -210,7 +210,7 @@ def recoveryFile(request, recovey_file):
         messages.success(request, recovery_mess)
         return redirect('bin_list')
     else:
-        messages.success(request, 'U must be logged in')
+        messages.success(request, 'You must be logged in')
         return redirect('bin_list')
 # class ProfileImageView(FormView):
 #     template_name = 'home.html'

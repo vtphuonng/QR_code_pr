@@ -5,7 +5,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Recycle Bin</title>
+    <title>Recycle Bin </title>
 </head>
 
 <body>
@@ -37,16 +37,11 @@
                         {% for file_name, file_path, create_time, deleted_time, form_id_counter in items %}
                         <tr>
                             <td>
-                                <button type="button" class="btn btn-light" onclick="window.location.href='{% url 'rm_file' file_path %}';">Delete</button>
+                                <button type="button" class="btn btn-light"  onclick="confirmDelete(this)" data-filepath="{{ file_path }}">Remove</button>
                             </td>
                             <td>
-                                <button type="button" class="btn btn-light" onclick="window.location.href='{% url 'recovery_path' file_path %}';">Recovery</button>
+                                <button type="button" class="btn btn-light" onclick="confirmRecovery(this)" data-filepath="{{ file_path }}" >Recovery</button>
                             </td>
-<!--                                    <script>-->
-<!--                                        // Set the URL patterns in the template context-->
-<!--                                        var rmFileUrlPattern = '{% url "rm_file" file_path %}';-->
-<!--                                        var reFileUrlPattern = '{% url "recovery_path" file_path %}';-->
-<!--                                    </script>-->
                             <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ file_name }}</td>
                             {% if file_path %}
                             <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ file_path }}</td>
@@ -80,6 +75,46 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script>
+<script>
+
+        function confirmDelete(button) {
+        var filePath = button.getAttribute('data-filepath');
+        console.log(filePath);
+
+        // Check if filePath is not empty and not undefined
+        if (filePath) {
+            var deleteUrl = '{% url "rm_file" rm_file="__placeholder__" %}'.replace('__placeholder__', encodeURIComponent(filePath));
+            var result = confirm("Are you sure you want to delete this file?");
+
+            if (result) {
+                window.location.href = deleteUrl;
+            } else {
+                // If the user clicks "Cancel", do nothing
+            }
+        } else {
+            console.error("File path is empty or undefined.");
+        }
+    }
+
+    function confirmRecovery(button) {
+        var filePath = button.getAttribute('data-filepath');
+        console.log(filePath);
+
+        // Check if filePath is not empty and not undefined
+        if (filePath) {
+            var deleteUrl = '{% url "recovery_path" recovey_file="__placeholder__" %}'.replace('__placeholder__', encodeURIComponent(filePath));
+            var result = confirm("Are you sure you want to delete this file?");
+
+            if (result) {
+                window.location.href = deleteUrl;
+            } else {
+                // If the user clicks "Cancel", do nothing
+            }
+        } else {
+            console.error("File path is empty or undefined.");
+        }
+    }
+</script>
 <!--<script>-->
 
 <!--    function confirmDelete(button) {-->
@@ -105,34 +140,33 @@
 <!--    }-->
 <!--</script>-->
 <!-- Uncomment the following script if you want to enable AJAX search -->
-<!--
-<script>
-    $(document).ready(function () {
-        $("#searchInput").on("keyup", function () {
-            var value = $(this).val().toLowerCase();
-            $.ajax({
-                url: "{% url 'search_results' %}",
-                data: { 'q': value },
-                dataType: 'json',
-                success: function (data) {
-                    var tableBody = $('#tableBody');
-                    tableBody.empty();
-                    $.each(data.items, function (index, item) {
-                        var row = '<tr>';
-                        row += '<td><button type="button" class="btn btn-light" onclick="confirmDelete(this)" data-filepath="' + item.file_path + '">Delete</button></td>';
-                        row += '<td><button type="button" class="btn btn-light" onclick="confirmRecovery(this)" data-filepath="' + item.file_path + '">Recovery</button></td>';
-                        row += '<td>' + item.file_name + '</td>';
-                        row += '<td>' + item.file_path + '</td>';
-                        row += '<td>' + item.create_time + '</td>';
-                        row += '<td>' + item.deleted_time + '</td>';
-                        tableBody.append(row);
-                    });
-                }
-            });
-        });
-    });
-</script>
--->
+<!--<script>-->
+<!--    $(document).ready(function () {-->
+<!--        $("#searchInput").on("keyup", function () {-->
+<!--            var value = $(this).val().toLowerCase();-->
+<!--            $.ajax({-->
+<!--                url: "{% url 'search_results' %}",-->
+<!--                data: { 'q': value },-->
+<!--                dataType: 'json',-->
+<!--                success: function (data) {-->
+<!--                    var tableBody = $('#tableBody');-->
+<!--                    tableBody.empty();-->
+<!--                    $.each(data.items, function (index, item) {-->
+<!--                        var row = '<tr>';-->
+<!--                        row += '<td><button type="button" class="btn btn-light" onclick="confirmDelete(this)" data-filepath="' + item.file_path + '">Delete</button></td>';-->
+<!--                        row += '<td><button type="button" class="btn btn-light" onclick="confirmRecovery(this)" data-filepath="' + item.file_path + '">Recovery</button></td>';-->
+<!--                        row += '<td>' + item.file_name + '</td>';-->
+<!--                        row += '<td>' + item.file_path + '</td>';-->
+<!--                        row += '<td>' + item.create_time + '</td>';-->
+<!--                        row += '<td>' + item.deleted_time + '</td>';-->
+<!--                        tableBody.append(row);-->
+<!--                    });-->
+<!--                }-->
+<!--            });-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+
 {% endblock %}
 </body>
 
