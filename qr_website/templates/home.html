@@ -5,7 +5,8 @@
   <div class="container">
     {% if user.is_authenticated %}
       <div class="mb-3">
-        <input type="text" id="searchInputs" class="form-control" placeholder="Search...">
+          <input type="text" id="searchInputs" class="form-control" placeholder="Search..." name="q" autocomplete="off">
+          <ul id="searchResults" class="list-group" style="position: absolute;"></ul>
       </div>
       <div class="mb-3">
         <a id="createNewButton" class="btn btn-primary">Create New</a>
@@ -26,33 +27,33 @@
             </thead>
             <tbody id="tableBody">
               {% if items %}
-                {% for file_name, file_path, file_created, file_last_modified, form, form_id in items %}
+                {% for item in items %}
                     <tr>
                       <td>
-                        <a class="btn btn-success" href="{% url 'file_download' pk=file_path %}" download>Download</a>
+                        <a class="btn btn-success" href="{% url 'file_download' pk=item.file_path %}" download>Download</a>
                       </td>
                         <td>
-                          <button type="button" class="btn btn-light"  onclick="confirmDelete(this)" data-filepath="{{ file_path }}">Delete</button>
+                          <button type="button" class="btn btn-light"  onclick="confirmDelete(this)" data-filepath="{{ item.file_path }}">Delete</button>
                         </td>
 
-                        <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ file_name }}</td>
+                        <td onclick="window.location.href='{% url 'e_record' item.file_path %}';">{{ item.file_name }}</td>
                         {% if file_path is not True %}
-                            <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ file_path }}</td>
+                            <td onclick="window.location.href='{% url 'e_record' item.file_path %}';">{{ item.file_path }}</td>
                         {% else %}
                             <td></td>
                         {% endif %}
-                        <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ file_created }}</td>
-                        <td onclick="window.location.href='{% url 'e_record' file_path %}';">{{ file_last_modified }}</td>
+                        <td onclick="window.location.href='{% url 'e_record' item.file_path %}';">{{ item.file_created }}</td>
+                        <td onclick="window.location.href='{% url 'e_record' item.file_path %}';">{{ item.file_last_modified }}</td>
                         <td>
                       <div class="dropdown">
-                        <button class="dropdown-item" onclick="toggleForm(this, {{ form_id }})">Upload File</button>
-                        <div class="dropdown-content" id="uploadForm{{ form_id }}" style="display: none;">
+                        <button class="dropdown-item" onclick="toggleForm(this, {{ item.form_id_counter }})">Upload File</button>
+                        <div class="dropdown-content" id="uploadForm{{ item.form_id_counter }}" style="display: none;">
                           <div class="container">
-                            <form id="uploadForm" action="{% url 'profile_image_upload' file_path=file_path %}" method="post" enctype="multipart/form-data" class="mt-5">
+                            <form id="uploadForm" action="{% url 'profile_image_upload' file_path=item.file_path %}" method="post" enctype="multipart/form-data" class="mt-5">
                               {% csrf_token %}
-                              {{ form.as_p }}
-                              <button type="submit" onclick="getPath(this, {{file_path}})" class="btn btn-secondary">Submit</button>
-                             <a class="btn btn-secondary" href="{% url 'cam_scan' file_path %}">Scan Image</a>
+                              {{ item.formd.as_p }}
+                              <button type="submit" onclick="getPath(this, {{item.file_path}})" class="btn btn-secondary">Submit</button>
+                             <a class="btn btn-secondary" href="{% url 'cam_scan' item.file_path %}">Scan Image</a>
                             </form>
                           </div>
                         </div>
@@ -111,7 +112,23 @@
 
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script>
-                        <script>
+
+<script>
+    $('#searchInputs').on('input', function() {
+        var searchQuery = $(this).val().toLowerCase();
+
+        // Filter the table rows based on the search query
+        $('#tableBody tr').each(function() {
+            var fileName = $(this).find('td:nth-child(3)').text().toLowerCase();
+            var shouldShow = searchQuery === '' || fileName.includes(searchQuery);
+
+            $(this).toggle(shouldShow);
+        });
+    });
+</script>
+
+
+<script>
     function confirmDelete(button) {
         var filePath = button.getAttribute('data-filepath');
         console.log(filePath);
@@ -130,8 +147,8 @@
             console.error("File path is empty or undefined.");
         }
     }
-                        </script>
-  <script>
+</script>
+<script>
       $('#createNewButton').on('click', function() {
         $('#createNewModal').modal('show');
       });
@@ -161,45 +178,15 @@
     };
 
     function toggleForm(button, formId) {
-      var form = $('#uploadForm' + formId);
-      form.show();
+        var form = $('#uploadForm' + formId);
+        form.toggle();  // Toggle the visibility of the form
     }
 
-  function getPath(button, file_path) {
-      // Assuming 'file_path' is a string, modify this based on your data structure
-      var form = $(button).closest('form');
-      form.attr('action', form.attr('action') + '/' + encodeURIComponent(file_path));
-  }
-  </script>
-<!--      <script>-->
-<!--          $(document).ready(function () {-->
-<!--            $("#searchInputs").on("keyup", function () {-->
-<!--                var value = $(this).val().toLowerCase();-->
-<!--                $.ajax({-->
-<!--                    url: "{% url 'search_home' %}",-->
-<!--                    data: { 'q': value },-->
-<!--                    dataType: 'json',-->
-<!--                    success: function (data) {-->
-<!--                        // Update the table with search results-->
-<!--                        var tableBody = $('#tableBody');-->
-<!--                        tableBody.empty();-->
-<!--                        $.each(data.items, function (index, item) {-->
-<!--                            var row = '<tr>';-->
-<!--                            row += '<td>';-->
-<!--                            row += '<button type="button" class="btn btn-light" onclick="confirmDelete(this)" data-filepath="' + item.file_path + '">Delete</button>';-->
-<!--                            row += '</td>';-->
-<!--                            row += '<td>' + item.file_name + '</td>';-->
-<!--                            row += '<td>' + item.file_path + '</td>';-->
-<!--                            row += '<td>' + item.create_time + '</td>';-->
-<!--                            row += '<td>' + item.file_last_modified + '</td>';-->
-<!--                            row += '<td>'-->
-<!--                            row += '<div class="dropdown">';-->
-<!--                            tableBody.append(row);-->
-<!--                        });-->
-<!--                    }-->
-<!--                });-->
-<!--            });-->
-<!--        });-->
-<!--      </script>-->
+    function getPath(button, file_path) {
+        // Assuming 'file_path' is a string, modify this based on your data structure
+        var form = $(button).closest('form');
+        form.attr('action', form.attr('action') + '/' + encodeURIComponent(file_path));
+    }
+</script>
 
 {% endblock %}

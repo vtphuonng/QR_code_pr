@@ -40,22 +40,61 @@ def home(request):
             messages.error(request, 'Login failed')
             return redirect('home')
     else:
+        search_query = request.GET.get('q', '')
+        print('GGGGG', search_query)
         file = files_generator()
         file_lst = file.getFiles()
 
         items = []
         form_id_counter = 1
+        qe_counter = 0
+        cache1 = []
+        cache2 = []
         for r in file_lst:
-            file_name = r[0]
-            file_path = r[1]
-            file_created = r[2]
-            file_last_modified = r[3]
+            # Check if the file matches the search query
+            if search_query and (
+                search_query.lower() in r[0].lower()
+            ):
+                file_name = r[0]
+                file_path = r[1]
+                file_created = r[2]
+                file_last_modified = r[3]
+                form = ProfileImageForm()
+                print(r[0])
+                cache1.append({
+                    'file_name': file_name,
+                    'file_path': file_path,
+                    'create_time': file_created,
+                    'file_last_modified': file_last_modified,
+                    'formd': form,
+                    'form_id_counter': form_id_counter
+                })
+                form_id_counter += 1
+                qe_counter += 1
+            else:
+                file_name = r[0]
+                file_path = r[1]
+                file_created = r[2]
+                file_last_modified = r[3]
+                form = ProfileImageForm()
+                cache2.append({
+                    'file_name': file_name,
+                    'file_path': file_path,
+                    'create_time': file_created,
+                    'file_last_modified': file_last_modified,
+                    'formd': form,
+                    'form_id_counter': form_id_counter
+                })
+                form_id_counter += 1
 
-            form = ProfileImageForm()
-            items.append((file_name, file_path, file_created, file_last_modified, form, form_id_counter))
-            form_id_counter += 1
+        if len(cache1) != 0:
+            print(len(cache1))
+            items = cache1
+        else:
+            items = cache2
 
-        context = {'items': items, 'upload_form': ProfileImageForm()}
+        context = {'items': items}
+        print(context)
         return render(request, 'home.html', context)
 
 
@@ -175,21 +214,50 @@ def recycleBin(request):
             messages.error(request, 'Login failed')
             return redirect('home')
     else:
+        search_query = request.GET.get('q', '')
         file = recycleManage()
         file_lst = file.getDummy()
-
         items = []
-        form_id_counter = 1
-
+        qe_counter = 0
+        cache1 = []
+        cache2 = []
         for r in file_lst:
-            file_name = r[0]
-            file_path = r[1]
-            create_time = r[2]
-            deleted_time = r[3]
-            items.append((file_name, file_path, create_time, deleted_time, form_id_counter))
-            form_id_counter += 1
+            # Check if the file matches the search query
+            if search_query and (
+                search_query.lower() in r[0].lower()
+            ):
+                file_name = r[0]
+                file_path = r[1]
+                file_created = r[2]
+                deleted_time = r[3]
+                print(r[0])
+                cache1.append({
+                    'file_name': file_name,
+                    'file_path': file_path,
+                    'create_time': file_created,
+                    'deleted_time': deleted_time,
+                })
+                qe_counter += 1
+            else:
+                file_name = r[0]
+                file_path = r[1]
+                file_created = r[2]
+                deleted_time = r[3]
+                cache2.append({
+                    'file_name': file_name,
+                    'file_path': file_path,
+                    'create_time': file_created,
+                    'deleted_time': deleted_time,
+                })
+
+        if len(cache1) != 0:
+            print(len(cache1))
+            items = cache1
+        else:
+            items = cache2
 
         context = {'items': items}
+        print(context)
         return render(request, 'recycleBin.html', context)
 
 def removeFile(request, rm_file):
